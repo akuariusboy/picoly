@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Picoly - Random Video Call</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .bg-pink-custom {
+            background-color: #ff69b4;
+        }
+        .text-pink-custom {
+            color: #ff69b4;
+        }
+        .border-pink-custom {
+            border-color: #ff69b4;
+        }
+        #videoContainer {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        video {
+            width: 45vw;
+            height: 45vw;
+            max-width: 300px;
+            max-height: 300px;
+            margin: 10px;
+            border-radius: 15px;
+            background-color: #000;
+        }
+        @media (max-width: 768px) {
+            video {
+                width: 90vw;
+                height: 90vw;
+                max-width: 400px;
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-pink-100 flex flex-col items-center justify-center min-h-screen">
+    <header class="w-full py-4 bg-pink-custom text-white text-center">
+        <h1 class="text-3xl font-bold">Picoly</h1>
+        <nav>
+            <a href="index.html" class="mx-4">Inicio</a>
+            <a href="video.html" class="mx-4">Video Llamada</a>
+            <a href="about.html" class="mx-4">Sobre Nosotros</a>
+        </nav>
+    </header>
+    <main class="flex flex-col items-center justify-center mt-10 px-4">
+        <h2 class="text-4xl font-bold mt-10 text-pink-600">Random Video Call</h2>
+        <div id="videoContainer" class="mt-8">
+            <video id="localVideo" autoplay muted class="rounded shadow-lg bg-black"></video>
+            <video id="remoteVideo" autoplay class="rounded shadow-lg bg-black"></video>
+        </div>
+        <div id="controls" class="mt-4 flex flex-col items-center">
+            <div class="flex">
+                <button id="startCall" class="bg-pink-custom text-white px-4 py-2 rounded mr-2">Start Call</button>
+                <button id="endCall" class="bg-red-500 text-white px-4 py-2 rounded">End Call</button>
+            </div>
+            <div class="flex mt-4">
+                <label for="volumeControl" class="mr-2">Volume:</label>
+                <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1">
+            </div>
+            <div class="flex mt-4">
+                <label for="videoFilter" class="mr-2">Filter:</label>
+                <select id="videoFilter">
+                    <option value="none">None</option>
+                    <option value="grayscale(100%)">Grayscale</option>
+                    <option value="sepia(100%)">Sepia</option>
+                    <option value="invert(100%)">Invert</option>
+                </select>
+            </div>
+        </div>
+        <div id="chatContainer" class="mt-4 w-3/4">
+            <textarea id="chatInput" class="w-full p-2 border rounded border-pink-custom" rows="3" placeholder="Type your message here..."></textarea>
+            <button id="sendMessage" class="bg-green-500 text-white px-4 py-2 rounded mt-2">Send Message</button>
+            <div id="chatMessages" class="mt-4 p-4 border rounded bg-white h-64 overflow-y-scroll border-pink-custom"></div>
+        </div>
+        <div id="status" class="mt-4 text-lg text-pink-700">Connecting to server...</div>
+        <div id="location" class="mt-4 text-lg text-pink-700"></div>
+    </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/simple-peer/simplepeer.min.js"></script>
+    <script src="chat.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedCountry = urlParams.get('country');
+        
+        document.getElementById('startCall').addEventListener('click', () => {
+            socket.emit('findPartner', { country: selectedCountry });
+            document.getElementById('status').innerText = 'Looking for a partner...';
+        });
+    </script>
+</body>
+</html>
